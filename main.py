@@ -1,11 +1,15 @@
 class User:
-    def __init__(self, name, surname):
-        self.name = name
-        self.surname = surname
+    def __init__(self, username, password):
+        self.username = username
+        self.password = password
+        self.accounts = []
+
+    def add_account(self, account):
+        self.accounts.append(account)
 
 class Account:
-    def __init__(self, user, balance=0):
-        self.user = user
+    def __init__(self, account_number, balance=0):
+        self.account_number = account_number
         self.balance = balance
         self.transactions = []
 
@@ -23,48 +27,49 @@ class Account:
         return self.balance
 
 class Transaction:
-    def __init__(self, account, transaction_type, amount):
-        self.account = account
+    def __init__(self, transaction_type, amount):
         self.transaction_type = transaction_type
         self.amount = amount
 
 class BankSystem:
     def __init__(self):
-        self.accounts = []
         self.users = []
+        self.accounts = []
 
-    def create_user(self, name, surname):
-        self.users.append(User(name, surname))
+    def create_user(self, username, password):
+        user = User(username, password)
+        self.users.append(user)
+        return user
 
-    def create_account(self, user, balance=0):
-        self.accounts.append(Account(user, balance))
+    def create_account(self, account_number, balance=0):
+        account = Account(account_number, balance)
+        self.accounts.append(account)
+        return account
 
-    def get_user(self, name, surname):
-        for user in self.users:
-            if user.name == name and user.surname == surname:
-                return user
+    def assign_account_to_user(self, user, account):
+        user.add_account(account)
 
-    def get_account(self, user):
-        for account in self.accounts:
-            if account.user == user:
-                return account
+    def get_user_accounts(self, user):
+        return user.accounts
 
-    def deposit(self, user, amount):
-        account = self.get_account(user)
-        account.deposit(amount)
-
-    def withdraw(self, user, amount):
-        account = self.get_account(user)
-        account.withdraw(amount)
-
-    def get_balance(self, user):
-        account = self.get_account(user)
+    def get_account_balance(self, account):
         return account.get_balance()
 
-bank = BankSystem()
-bank.create_user("John", "Doe")
-user = bank.get_user("John", "Doe")
-bank.create_account(user)
-bank.deposit(user, 1000)
-bank.withdraw(user, 500)
-print(bank.get_balance(user))
+bank_system = BankSystem()
+user1 = bank_system.create_user("user1", "password1")
+account1 = bank_system.create_account("12345", 1000)
+bank_system.assign_account_to_user(user1, account1)
+account1.deposit(500)
+account1.withdraw(200)
+print(bank_system.get_account_balance(account1))
+for transaction in account1.transactions:
+    print(f"{transaction[0]} {transaction[1]}")
+
+user2 = bank_system.create_user("user2", "password2")
+account2 = bank_system.create_account("67890", 500)
+bank_system.assign_account_to_user(user2, account2)
+account2.deposit(200)
+account2.withdraw(100)
+print(bank_system.get_account_balance(account2))
+for transaction in account2.transactions:
+    print(f"{transaction[0]} {transaction[1]}")
