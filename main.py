@@ -1,21 +1,70 @@
-def ortacha_soni_hesobla(sonlar):
-    natija = 0
-    for son in sonlar:
-        natija += son
-    ortacha = natija / len(sonlar)
-    return ortacha
+class User:
+    def __init__(self, name, surname):
+        self.name = name
+        self.surname = surname
 
-sonlar_ro_yuqlandi = [1, 2, 3, 4, 5]
-print("Sonlar ro'yxati: ", sonlar_ro_yuqlandi)
-sonlar_ortachasi = ortacha_soni_hesobla(sonlar_ro_yuqlandi)
-print("Sonlar ro'yxati o'rtacha qiymati: ", sonlar_ortachasi)
+class Account:
+    def __init__(self, user, balance=0):
+        self.user = user
+        self.balance = balance
+        self.transactions = []
 
-sonlar_ro_yuqlandi = [10, 20, 30, 40, 50]
-print("Sonlar ro'yxati: ", sonlar_ro_yuqlandi)
-sonlar_ortachasi = ortacha_soni_hesobla(sonlar_ro_yuqlandi)
-print("Sonlar ro'yxati o'rtacha qiymati: ", sonlar_ortachasi)
+    def deposit(self, amount):
+        self.balance += amount
+        self.transactions.append(("deposit", amount))
 
-sonlar_ro_yuqlandi = [100, 200, 300, 400, 500]
-print("Sonlar ro'yxati: ", sonlar_ro_yuqlandi)
-sonlar_ortachasi = ortacha_soni_hesobla(sonlar_ro_yuqlandi)
-print("Sonlar ro'yxati o'rtacha qiymati: ", sonlar_ortachasi)
+    def withdraw(self, amount):
+        if amount > self.balance:
+            raise ValueError("Insufficient balance")
+        self.balance -= amount
+        self.transactions.append(("withdrawal", amount))
+
+    def get_balance(self):
+        return self.balance
+
+class Transaction:
+    def __init__(self, account, transaction_type, amount):
+        self.account = account
+        self.transaction_type = transaction_type
+        self.amount = amount
+
+class BankSystem:
+    def __init__(self):
+        self.accounts = []
+        self.users = []
+
+    def create_user(self, name, surname):
+        self.users.append(User(name, surname))
+
+    def create_account(self, user, balance=0):
+        self.accounts.append(Account(user, balance))
+
+    def get_user(self, name, surname):
+        for user in self.users:
+            if user.name == name and user.surname == surname:
+                return user
+
+    def get_account(self, user):
+        for account in self.accounts:
+            if account.user == user:
+                return account
+
+    def deposit(self, user, amount):
+        account = self.get_account(user)
+        account.deposit(amount)
+
+    def withdraw(self, user, amount):
+        account = self.get_account(user)
+        account.withdraw(amount)
+
+    def get_balance(self, user):
+        account = self.get_account(user)
+        return account.get_balance()
+
+bank = BankSystem()
+bank.create_user("John", "Doe")
+user = bank.get_user("John", "Doe")
+bank.create_account(user)
+bank.deposit(user, 1000)
+bank.withdraw(user, 500)
+print(bank.get_balance(user))
